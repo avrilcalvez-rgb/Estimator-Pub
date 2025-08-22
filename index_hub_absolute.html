@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estimator Hub</title>
+<style>
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;background:#0b1220;color:#e5e7eb}
+  .wrap{max-width:980px;margin:24px auto;padding:0 16px}
+  h1{margin:20px 0 6px}
+  p.muted{color:#94a3b8}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}
+  .card{background:#0f172a;border:1px solid #1f2937;border-radius:14px;padding:16px}
+  .title{font-weight:700;margin-bottom:6px}
+  .btns a, .btns button{display:inline-block;margin-right:8px;margin-top:6px;padding:9px 12px;border-radius:10px;border:1px solid #334155;background:#111827;color:#e5e7eb;text-decoration:none;cursor:pointer}
+  .btns a.primary, .btns button.primary{background:#14532d;border-color:#14532d}
+  iframe{width:100%;height:75vh;border:0;margin-top:14px;background:#020617;border-radius:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Estimator Hub</h1>
+  <p class="muted">Both estimators from one URL. Buttons below open them in-page or in a new tab.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="title">NEW — 3‑Tab Blinds Estimator</div>
+      <div class="btns">
+        <button class="primary" onclick="openInFrame('https://avrilcalvez-rgb.github.io/Estimator-Pub/new_estimator.html')">Open inside this page</button>
+        <a class="primary" href="https://avrilcalvez-rgb.github.io/Estimator-Pub/new_estimator.html">Open in new tab</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">OLD — Legacy Estimator</div>
+      <div class="btns">
+        <button onclick="openInFrame('https://avrilcalvez-rgb.github.io/Estimator-Pub/legacy_estimator.html')">Open inside this page</button>
+        <a href="https://avrilcalvez-rgb.github.io/Estimator-Pub/legacy_estimator.html">Open in new tab</a>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="frame" title="Estimator preview"></iframe>
+
+  <p class="muted">Direct links: <a href="https://avrilcalvez-rgb.github.io/Estimator-Pub/new_estimator.html">https://avrilcalvez-rgb.github.io/Estimator-Pub/new_estimator.html</a> ·
+  <a href="https://avrilcalvez-rgb.github.io/Estimator-Pub/legacy_estimator.html">https://avrilcalvez-rgb.github.io/Estimator-Pub/legacy_estimator.html</a></p>
+</div>
+
+<script>
+function openInFrame(url){ document.getElementById('frame').src = url; }
+
+// Auto-open NEW by default unless ?v=old is present
+(function(){
+  const v = new URLSearchParams(location.search).get('v');
+  if(v === 'old') openInFrame('https://avrilcalvez-rgb.github.io/Estimator-Pub/legacy_estimator.html');
+  else openInFrame('https://avrilcalvez-rgb.github.io/Estimator-Pub/new_estimator.html');
+})();
+</script>
+</body>
+</html>
