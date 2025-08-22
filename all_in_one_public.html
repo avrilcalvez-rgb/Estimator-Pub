@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All-in-One Estimator — Public (Totals Only)</title>
+  <style>
+    :root { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Noto Sans; }
+    body { margin: 0; background: #0f172a; color: #e5e7eb; }
+    .container { max-width: 1100px; margin: 24px auto; padding: 16px; }
+    .card { background: #111827; border-radius: 16px; padding: 20px; box-shadow: 0 10px 24px rgba(0,0,0,.3); }
+    h1 { margin: 0 0 10px; font-size: 22px; }
+    .muted { color: #9ca3af; margin: 0 0 10px; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+    label { display:block; font-size:12px; color:#cbd5e1; margin-bottom:6px; }
+    input, select { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #1f2937; background:#0b1220; color:#e5e7eb; }
+    .products { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin-top: 16px; }
+    @media (max-width: 900px) { .products { grid-template-columns: 1fr; } }
+    .product { background:#0b1220; border:1px solid #1f2937; border-radius:16px; padding:16px; }
+    .product h2 { margin:0 0 8px; font-size:18px; }
+    .note { font-size:12px; color:#a3e635; margin:6px 0 0; }
+    .result { background:#0a0f1c; border:1px dashed #1f2937; border-radius:12px; padding:12px; margin-top:10px; min-height:48px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .total { font-weight:800; }
+    .quote { background:#111827; color:#fff; border-radius:12px; padding:12px; margin-top:10px; white-space:pre-wrap; min-height:64px; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+    .btn { background:#059669; color:#fff; padding:10px 16px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+    .summary { margin-top:18px; }
+    /* Hide all technical details completely */
+    .small, .kv { display:none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>All-in-One Estimator</h1>
+      <p class="muted">Enter client + size. This public view shows **totals only** and basic "allowed/not allowed" notes — no per‑sqft rates or internal formulas.</p>
+      <div class="grid">
+        <div>
+          <label>Client Name</label>
+          <input id="client_name" type="text" placeholder="Enter client name" />
+        </div>
+        <div>
+          <label>Width</label>
+          <input id="width" type="number" step="0.01" placeholder="Enter width" />
+        </div>
+        <div>
+          <label>Height</label>
+          <input id="height" type="number" step="0.01" placeholder="Enter height" />
+        </div>
+        <div>
+          <label>Unit</label>
+          <select id="unit">
+            <option value="mm">mm</option>
+            <option value="cm">cm</option>
+            <option value="m">m</option>
+            <option value="in">in</option>
+            <option value="ft">ft</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="products">
+      <section class="product" id="accordion">
+        <h2>Accordion Door (Regular / French)</h2>
+        <div class="row">
+          <div>
+            <label>Style</label>
+            <select id="ad_style">
+              <option value="regular">Regular</option>
+              <option value="french">French</option>
+            </select>
+          </div>
+          <div>
+            <label>Opening</label>
+            <select id="ad_opening">
+              <option value="one-way">One-Way</option>
+              <option value="two-way">Two-Way (Center)</option>
+            </select>
+          </div>
+        </div>
+        <div class="result"><div id="ad_note"></div><div class="total" id="ad_total"></div></div>
+        <div class="quote" id="ad_quote"></div>
+        <button class="btn" onclick="copyQuote('ad_quote')">Copy Message</button>
+      </section>
+
+      <section class="product" id="polycarbonate">
+        <h2>Polycarbonate Accordion</h2>
+        <div class="row">
+          <div>
+            <label>Opening</label>
+            <select id="pc_opening">
+              <option value="one-way">One-Way</option>
+              <option value="two-way">Two-Way (Center)</option>
+            </select>
+          </div>
+          <div>
+            <label>Type</label>
+            <select id="pc_type">
+              <option value="frosted">Frosted</option>
+              <option value="transparent">Transparent</option>
+            </select>
+          </div>
+        </div>
+        <div class="note" id="pc_note"></div>
+        <div class="result"><div id="pc_note2"></div><div class="total" id="pc_total"></div></div>
+        <div class="quote" id="pc_quote"></div>
+        <button class="btn" onclick="copyQuote('pc_quote')">Copy Message</button>
+      </section>
+
+      <section class="product" id="pleated">
+        <h2>Pleated Screen</h2>
+        <div class="row">
+          <div>
+            <label>Type</label>
+            <select id="pl_type">
+              <option value="one-way">One-Way</option>
+              <option value="two-way">Two-Way</option>
+            </select>
+          </div>
+        </div>
+        <div class="note" id="pl_note"></div>
+        <div class="result"><div id="pl_note2"></div><div class="total" id="pl_total"></div></div>
+        <div class="quote" id="pl_quote"></div>
+        <button class="btn" onclick="copyQuote('pl_quote')">Copy Message</button>
+      </section>
+
+      <section class="product" id="security">
+        <h2>Security Screen (Lock Included)</h2>
+        <div class="row">
+          <div>
+            <label>Type</label>
+            <select id="sc_type">
+              <option value="one-way">One-Way</option>
+              <option value="two-way">Two-Way (Center)</option>
+            </select>
+          </div>
+        </div>
+        <div class="note" id="sc_note"></div>
+        <div class="result"><div id="sc_note2"></div><div class="total" id="sc_total"></div></div>
+        <div class="quote" id="sc_quote"></div>
+        <button class="btn" onclick="copyQuote('sc_quote')">Copy Message</button>
+      </section>
+
+      <section class="product" id="t2b">
+        <h2>Top-to-Bottom Screen</h2>
+        <div class="result"><div id="t2b_note"></div><div class="total" id="t2b_total"></div></div>
+        <div class="quote" id="t2b_quote"></div>
+        <button class="btn" onclick="copyQuote('t2b_quote')">Copy Message</button>
+      </section>
+
+      <section class="product" id="honeycomb">
+        <h2>Honeycomb (Three Options)</h2>
+        <div class="result"><div>One-Way</div><div class="total" id="hc_one"></div></div>
+        <div class="result"><div>Two-Way</div><div class="total" id="hc_two"></div></div>
+        <div class="result"><div>With Screen</div><div class="total" id="hc_combo"></div></div>
+        <div class="quote" id="hc_quote_all"></div>
+        <button class="btn" onclick="copyQuote('hc_quote_all')">Copy Honeycomb Summary</button>
+      </section>
+    </div>
+
+    <div class="card summary">
+      <h2 style="margin:0 0 10px;">Combined Summary</h2>
+      <div class="quote" id="all_quote"></div>
+      <div style="margin-top:10px;">
+        <button class="btn" onclick="copyQuote('all_quote')">Copy Combined Message</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function toInches(value, unit) {
+    const u = (unit || "").toLowerCase();
+    if (!value || value <= 0) return 0;
+    if (u === "mm") return value / 25.4;
+    if (u === "cm") return value / 2.54;
+    if (u === "m")  return value * 39.3700787;
+    if (u === "ft") return value * 12;
+    return value;
+  }
+  function toMeters(value, unit) {
+    const u = (unit || "").toLowerCase();
+    if (!value || value <= 0) return 0;
+    if (u === "mm") return value / 1000;
+    if (u === "cm") return value / 100;
+    if (u === "m")  return value;
+    if (u === "in") return value * 0.0254;
+    if (u === "ft") return value * 0.3048;
+    return value * 0.0254;
+  }
+  function sqft(wIn, hIn) { return (wIn * hIn) / 144.0; }
+  const peso0 = n => new Intl.NumberFormat("en-PH", { style:"currency", currency:"PHP", maximumFractionDigits:0 }).format(n || 0);
+  const fix2 = n => (Math.round((n || 0) * 100) / 100);
+
+  let last = { w:0,h:0,mW:0,areaRaw:0,
+    t2bAllowed:true,t2bTotal:null,
+    plAllowed:true,plTwo:false,plTotal:0,
+    scAllowed:true,scTwo:false,scTotal:0,
+    pcTotal:0, adTotal:0, hcOne:null, hcTwo:null, hcCombo:null,
+    pcWarn:"", hcWarn:""
+  };
+
+  function autoCompute() {
+    const width = parseFloat(document.getElementById("width").value);
+    const height = parseFloat(document.getElementById("height").value);
+    const unit = document.getElementById("unit").value;
+    if (!width || !height) { buildCombined(unit || "in", document.getElementById("width").value || "", document.getElementById("height").value || ""); return; }
+    const w = toInches(width, unit);
+    const h = toInches(height, unit);
+    const mW = toMeters(width, unit);
+    const areaRaw = sqft(w, h);
+    last.w = w; last.h = h; last.mW = mW; last.areaRaw = areaRaw;
+
+    const autoTwoWay = mW > 3;
+
+    computeAccordion(w,h,areaRaw);
+    computePolycarbonate(w,h,areaRaw, autoTwoWay);
+    computePleated(w,h,areaRaw, document.getElementById("pl_type").value, autoTwoWay);
+    computeSecurity(w,h,areaRaw, document.getElementById("sc_type").value, autoTwoWay);
+    computeT2B(w,h,areaRaw);
+    computeHoneycomb(w,h,areaRaw, mW, autoTwoWay);
+
+    buildCombined(unit, width, height);
+  }
+
+  function copyQuote(id) {
+    const el = document.getElementById(id);
+    const text = (el && el.textContent) ? el.textContent : "";
+    if (!text.trim()) { alert("Nothing to copy."); return; }
+    navigator.clipboard.writeText(text).then(() => { alert("Copied!"); })
+    .catch(() => {
+      const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand("copy"); document.body.removeChild(ta); alert("Copied!");
+    });
+  }
+
+  // Accordion (no technical details shown)
+  function computeAccordion(w,h,areaRaw) {
+    const total = (()=>{
+      if (h > 120) return null;
+      let h_ft = h/12, adj_ft = (h_ft <=7 ? 7 : h_ft <=8 ? 8 : h_ft <=9 ? 9 : 10);
+      const adj_in = adj_ft * 12;
+      const areaAdj = (w * adj_in) / 144;
+      const sqftCharge = Math.max(20, areaAdj);
+      const style = document.getElementById("ad_style").value;
+      const opening = document.getElementById("ad_opening").value;
+      const rate = (style === "french") ? 320 : 220;
+      const addOpening = (style === "french") ? (opening === "two-way" ? 2400 : 1200) : (opening === "two-way" ? 2000 : 1000);
+      return Math.round(sqftCharge * rate + addOpening);
+    })();
+    const note = document.getElementById("ad_note");
+    const out = document.getElementById("ad_total");
+    const quote = document.getElementById("ad_quote");
+    if (total === null) { note.textContent = "Not allowed (height > 120 in)."; out.textContent = "—"; quote.textContent = withClient("Accordion: Not allowed."); return; }
+    note.textContent = "Estimated Total";
+    out.textContent = peso0(total);
+    quote.textContent = withClient(`Accordion: ${peso0(total)}`);
+    last.adTotal = total;
+  }
+
+  // Polycarbonate
+  function computePolycarbonate(w,h,areaRaw, autoTwoWay) {
+    const note = document.getElementById("pc_note");
+    const out2 = document.getElementById("pc_total");
+    const quote = document.getElementById("pc_quote");
+    const openingSel = document.getElementById("pc_opening");
+    if (autoTwoWay) openingSel.value = "two-way";
+    if (h > 120) { note.textContent = ""; out2.textContent = "—"; quote.textContent = withClient("Polycarbonate: Not allowed (height > 120 in)."); last.pcTotal = 0; return; }
+    let h_ft = h/12, adj_ft = (h_ft <=7 ? 7 : h_ft <=8 ? 8 : h_ft <=9 ? 9 : 10);
+    const adj_in = adj_ft * 12;
+    const areaAdj = (w * adj_in) / 144;
+    const sqftCharge = Math.max(20, areaAdj);
+    const opening = openingSel.value;
+    const rate = 750;
+    const addOpening = (opening === "two-way") ? 3000 : 1200;
+    const total = Math.round(sqftCharge * rate + addOpening);
+    note.textContent = autoTwoWay ? "Auto Two-Way (width > 3 m)" : "";
+    out2.textContent = peso0(total);
+    quote.textContent = withClient(`Polycarbonate (${opening}): ${peso0(total)}`);
+    last.pcTotal = total;
+  }
+
+  // Top-to-Bottom
+  function computeT2B(w,h,areaRaw) {
+    const out = document.getElementById("t2b_total");
+    const note = document.getElementById("t2b_note");
+    const quote = document.getElementById("t2b_quote");
+    const widthOK = w <= 70, heightOK = h <= 70.866;
+    if (!widthOK || !heightOK) {
+      const reasons=[]; if(!widthOK) reasons.push("width > 70 in"); if(!heightOK) reasons.push("height > 70.866 in");
+      note.textContent = "Not allowed (" + reasons.join(" & ") + ")";
+      out.textContent = "—";
+      quote.textContent = withClient(`Top-to-Bottom: Not allowed (${reasons.join(" & ")}).`);
+      last.t2bAllowed = false; last.t2bTotal = null; return;
+    }
+    const area = Math.max(15, areaRaw);
+    const total = Math.round(area * 250);
+    note.textContent = "Estimated Total";
+    out.textContent = peso0(total);
+    quote.textContent = withClient(`Top-to-Bottom: ${peso0(total)}`);
+    last.t2bAllowed = true; last.t2bTotal = total;
+  }
+
+  // Pleated
+  function computePleated(w,h,areaRaw, type, autoTwoWay) {
+    const out = document.getElementById("pl_total");
+    const note = document.getElementById("pl_note2");
+    const quote = document.getElementById("pl_quote");
+    if (h > 120) { note.textContent = "Not allowed (height > 120 in)"; out.textContent = "—"; quote.textContent = withClient("Pleated: Not allowed."); last.plAllowed=false; last.plTotal=0; return; }
+    const twoForced = autoTwoWay;
+    const two = twoForced || (String(type).toLowerCase()==="two-way");
+    const mW = last.mW;
+    if (two && mW > 6) { note.textContent = "Not allowed (two-way width > 6 m)"; out.textContent = "—"; quote.textContent = withClient("Pleated: Not allowed (two-way width > 6 m)."); last.plAllowed=false; last.plTwo=true; last.plTotal=0; return; }
+    const area = Math.max(15, areaRaw);
+    const rate = two ? 375 : 350;
+    const total = Math.round(area * rate);
+    note.textContent = twoForced ? "Auto Two-Way (width > 3 m)" : "Estimated Total";
+    out.textContent = peso0(total);
+    quote.textContent = withClient(`Pleated (${two ? "Two-Way" : "One-Way"}): ${peso0(total)}`);
+    last.plAllowed=true; last.plTwo=two; last.plTotal=total;
+  }
+
+  // Security
+  function computeSecurity(w,h,areaRaw, type, autoTwoWay) {
+    const out = document.getElementById("sc_total");
+    const note = document.getElementById("sc_note2");
+    const quote = document.getElementById("sc_quote");
+    if (h > 120) { note.textContent = "Not allowed (height > 120 in)"; out.textContent = "—"; quote.textContent = withClient("Security: Not allowed."); last.scAllowed=false; last.scTotal=0; return; }
+    const twoForced = autoTwoWay;
+    const two = twoForced || (String(type).toLowerCase().includes("two"));
+    const mW = last.mW;
+    if (two && mW > 6) { note.textContent = "Not allowed (two-way width > 6 m)"; out.textContent = "—"; quote.textContent = withClient("Security: Not allowed (two-way width > 6 m)."); last.scAllowed=false; last.scTwo=true; last.scTotal=0; return; }
+    const area = Math.max(20, areaRaw);
+    const base = area * 750;
+    const addon = two ? (area * 780 + 3000) : 0;
+    const total = Math.round(base + addon);
+    note.textContent = twoForced ? "Auto Two-Way (width > 3 m)" : "Estimated Total";
+    out.textContent = peso0(total);
+    quote.textContent = withClient(`Security (${two ? "Two-Way" : "One-Way"}): ${peso0(total)}`);
+    last.scAllowed=true; last.scTwo=two; last.scTotal=total;
+  }
+
+  // Honeycomb
+  function computeHoneycomb(w,h,areaRaw, mW, autoTwoWay) {
+    const prefix = (document.getElementById("client_name").value || "").trim();
+    const pfx = prefix ? `For ${prefix}: ` : "";
+    const areaMin20 = Math.max(20, areaRaw);
+    const oneRate = 390, twoRate = 390, cbRate = 410;
+    const oneAllowed = (w <= 94.49 && h <= 110.24);
+    const twoAllowed = (w <= 188.98 && h <= 120);
+    const cbAllowed  = (w <= 94 && h <= 110);
+    const oneTotal = oneAllowed ? Math.round(areaMin20 * oneRate) : null;
+    const twoTotal = twoAllowed ? Math.round(areaMin20 * twoRate + 3000) : null;
+    const cbTotal  = cbAllowed  ? Math.round(areaMin20 * cbRate) : null;
+
+    document.getElementById("hc_one").textContent   = oneAllowed ? peso0(oneTotal) : "Not allowed";
+    document.getElementById("hc_two").textContent   = twoAllowed ? peso0(twoTotal) : "Not allowed";
+    document.getElementById("hc_combo").textContent = cbAllowed  ? peso0(cbTotal)  : "Not allowed";
+
+    const oneStr = oneAllowed ? peso0(oneTotal) : "Not allowed";
+    const twoStr = twoAllowed ? peso0(twoTotal) : "Not allowed";
+    const cbStr  = cbAllowed  ? peso0(cbTotal)  : "Not allowed";
+    const combined = `${pfx}Honeycomb — One-Way: ${oneStr}; Two-Way: ${twoStr}; With Screen: ${cbStr}. Free estimate, delivery & installation depende sa location.`;
+    document.getElementById("hc_quote_all").textContent = combined;
+
+    last.hcOne = oneTotal; last.hcTwo = twoTotal; last.hcCombo = cbTotal;
+  }
+
+  // Helpers
+  function withClient(text) {
+    const name = document.getElementById("client_name").value;
+    return (name ? `For ${name}: ` : "") + text;
+  }
+
+  function buildCombined(unit, Wraw, Hraw) {
+    const name = document.getElementById("client_name").value;
+    const header = name ? `Estimation Summary for ${name}\n` : "Estimation Summary\n";
+    const dims = `${Wraw} × ${Hraw} ${unit}`;
+    const adLine = `Accordion Door: ${peso0(last.adTotal)}`;
+    const pcLine = `Polycarbonate: ${peso0(last.pcTotal)}`;
+    const scLine = last.scAllowed ? `Security (${last.scTwo ? "Two-Way" : "One-Way"}): ${peso0(last.scTotal)}` : "Security: Not allowed";
+    const t2bLine = (last.t2bAllowed && last.t2bTotal != null) ? `Top-to-Bottom: ${peso0(last.t2bTotal)}` : "Top-to-Bottom: Not allowed";
+    const plLine = last.plAllowed ? `Pleated (${last.plTwo ? "Two-Way" : "One-Way"}): ${peso0(last.plTotal)}` : "Pleated: Not allowed";
+    const hcLine = `Honeycomb — One-Way: ${peso0(last.hcOne||0)}; Two-Way: ${peso0(last.hcTwo||0)}; With Screen: ${peso0(last.hcCombo||0)}`;
+    const combined = `${header}${dims}
+${adLine}
+${pcLine}
+${scLine}
+${t2bLine}
+${plLine}
+${hcLine}
+
+Free estimate, delivery & installation depende sa location. Salamat po!`;
+    document.getElementById("all_quote").textContent = combined;
+  }
+
+  function wireAuto() {
+    const ids = ["client_name","width","height","unit","ad_style","ad_opening","pc_opening","pc_type","pl_type","sc_type"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", autoCompute);
+      el.addEventListener("change", autoCompute);
+    });
+    autoCompute();
+  }
+  document.addEventListener("DOMContentLoaded", wireAuto);
+</script>
+</body>
+</html>
